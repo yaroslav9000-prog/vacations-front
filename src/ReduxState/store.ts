@@ -10,9 +10,9 @@ import {combineReducers, configureStore} from "@reduxjs/toolkit";
 
 
 
-// const reducers = combineReducers({vacations: vacationReducer, user: authReducer});
+const reducers = combineReducers({vacations: vacationReducer, user: userReducer});
 
-// export const store = configureStore({
-//     reducer: {reducers},
-//     middleware: (getDefaultMiddleware)=>getDefaultMiddleware({serializableCheck: false})
-//})
+export const store = configureStore({
+    reducer: {reducers},
+    middleware: (getDefaultMiddleware)=>getDefaultMiddleware({serializableCheck: false})
+})

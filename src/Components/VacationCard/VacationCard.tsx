@@ -1,6 +1,12 @@
 import "./VacationCard.css";
+import { Vacation } from "../../Models/Vacation";
 
-function VacationCard(): JSX.Element {
+type Props={
+    vacationInfo: Vacation,
+    userRole: "user"| "admin";
+}
+
+function VacationCard(props: Vacation): JSX.Element {
     return (
         <div className="VacationCard">
 			

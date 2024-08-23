@@ -6,7 +6,7 @@ import "./MainLayout.css";
 
 function MainLayout(): JSX.Element {
     return (
-        <div className="MainLayout">
+        <div className="MainLayout container">
 			<Header/>
             <Main/>
             <Menu/>

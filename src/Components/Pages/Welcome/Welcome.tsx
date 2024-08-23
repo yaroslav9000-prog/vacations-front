@@ -7,8 +7,8 @@ function Welcome(): JSX.Element {
     return (
         <div className="Welcome">
             <h1>Welcome page Works</h1>
-            <Button navigationPath="/Login" textContent="Login"/>
-            <Button navigationPath="/Register" textContent="Register"/>
+            <Button bootstrapStyle="btn btn-primary" navigationPath="/Login" textContent="Login"/>
+            <Button bootstrapStyle="btn btn-danger" navigationPath="/Register" textContent="Register"/>
         </div>
     );
 }
