@@ -16,3 +16,5 @@ export const store = configureStore({
     reducer: {reducers},
     middleware: (getDefaultMiddleware)=>getDefaultMiddleware({serializableCheck: false})
 })
+export type AppStore = typeof store
+export type RootState = ReturnType<AppStore['getState']>

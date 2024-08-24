@@ -1,30 +1,37 @@
-import {createSlice} from "@reduxjs/toolkit";
+import {createSlice, createAsyncThunk, $CombinedState} from "@reduxjs/toolkit";
 import { User } from "../../Models/User";
+import { RootState } from "../store";
 
-const initialState = <User>{};
+export interface UserState{
+    value: null | User,
+    status: 'idle'| 'loading'| 'failed'
+}
+export interface valuesFetchUser{
+    email: string,
+    pwd: string
+}
+const initialState: UserState = {
+    value: null,
+    status: 'idle'
+};
 
 const userSlice = createSlice({
-    name: "User",
+    name: "user",
     initialState,
     reducers: {
-        authUser(state, action){
-            state = action.payload;
+        logout: state => {
+            state.value = null;
         }
     }
 })
 
-//User actions.
-// const setUser = (userObj: User)=>{
-//     return {
-//         type: "SET_USER",
-//         payload: userObj
-//     } 
-// };
-// const logOut = ()=>{
-//     return {
-//         type: "LOGOUT",
-//         payload: {}
-//     }
-// };
-
+export const selectUser = (state: RootState) => state.reducers.user
+// export const selectStatus = (state: RootState) => state.user.status
+export const fetchUser = createAsyncThunk(
+    'user/fetchUser',
+    async(data: valuesFetchUser)=> {
+        const LOGIN_API = 'http://localhost:3500/api/auth/login';
+        
+    }
+)
 export default userSlice.reducer;
