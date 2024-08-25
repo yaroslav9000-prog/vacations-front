@@ -1,6 +1,6 @@
 import {combineReducers, configureStore} from "@reduxjs/toolkit";
-
-
+import vacationReducer from "./Slices/vacationSlice";
+import userReducer from "./Slices/authSlice";
 //I need reducers for vacation list
 //Regular user will be able to follow and unfollow vacation
 //Since that i need state management for followed vacations
@@ -17,4 +17,7 @@ export const store = configureStore({
     middleware: (getDefaultMiddleware)=>getDefaultMiddleware({serializableCheck: false})
 })
 export type AppStore = typeof store
-export type RootState = ReturnType<AppStore['getState']>
+// Infer the `AppDispatch` type from the store itself
+export type AppDispatch = typeof store.dispatch
+// Same for the `RootState` type
+export type RootState = ReturnType<typeof store.getState>
