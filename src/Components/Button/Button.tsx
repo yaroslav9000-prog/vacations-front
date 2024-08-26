@@ -12,6 +12,7 @@ function Button(props: Props): JSX.Element {
     return (
         <button className={"Button " + props.bootstrapStyle} onClick={()=>navigate(props.navigationPath)}>
             <h3>{props.textContent}</h3>
+            
         </button>
     );
 }
