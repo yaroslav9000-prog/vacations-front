@@ -1,10 +1,12 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {SubmitHandler, useForm} from "react-hook-form";
 import { useSelector } from "react-redux/es/hooks/useSelector";
 import {useDispatch} from "react-redux";
 import "./Login.css";
 import axios from "axios";
 import { Link } from "react-router-dom";
+import { fetchVacations } from "../../../ReduxState/Slices/vacationSlice";
+import { AppDispatch } from "../../../ReduxState/store";
 interface FormInputs{
     email: string,
     pwd: string
@@ -15,6 +17,11 @@ function Login(): JSX.Element {
     const onSubmit: SubmitHandler<FormInputs> = data => {
         console.log(data);
     };
+    const dispatch = useDispatch<AppDispatch>();
+    useEffect(()=>{
+        dispatch(fetchVacations());
+    },[])
+    
     return (
         <div className="Login form-signin w-100 m-100 " style={{width:"6em", marginLeft: "auto", marginRight: "auto"}}>
             <form onSubmit={handleSubmit(onSubmit)} className="Login container d-flex flex-column my-3 " style={{width: "25rem"}}>

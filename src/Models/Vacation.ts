@@ -8,6 +8,6 @@ export interface Vacation{
     endDateVacation: string;
     vacationPrice: number;
     imageName: string;
-    _id: mongoose.Types.ObjectId;
+    _id: string;
 
 }

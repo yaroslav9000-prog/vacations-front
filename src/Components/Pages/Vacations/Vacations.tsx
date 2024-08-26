@@ -6,10 +6,10 @@ import VacationCard from "../../VacationCard/VacationCard";
 import { useState } from "react";
 
 function Vacations(): JSX.Element {
-    const vacations = useSelector((state:RootState)=> state.reducers.vacations)
+    const vacations = useSelector((state:RootState)=> state.reducers.vacations.value)
     
     const ITEMS_PER_PAGE = 10;
-    const totalPages = Math.ceil(vacations.value!.length / 10);
+    const totalPages = Math.ceil(vacations!.length / 10);
     const [currentPage, setCurrentPage] = useState(1);
     const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
     const endIndex = currentPage * ITEMS_PER_PAGE - 1;
@@ -51,7 +51,7 @@ function Vacations(): JSX.Element {
         setCurrentPage(currentPage + 1);
     }
 
-    const renderedVacations = vacations.value?vacations.value.slice(startIndex, endIndex).map((item: Vacation)=>(
+    const renderedVacations = vacations?vacations.slice(startIndex, endIndex).map((item: Vacation)=>(
         <VacationCard vacation={item}/>
     )): <p>No vacations to show</p>
     return (
