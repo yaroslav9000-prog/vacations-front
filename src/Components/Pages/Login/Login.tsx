@@ -4,26 +4,38 @@ import { useSelector } from "react-redux/es/hooks/useSelector";
 import {useDispatch} from "react-redux";
 import "./Login.css";
 import axios from "axios";
-import { Link } from "react-router-dom";
-import { fetchVacations } from "../../../ReduxState/Slices/vacationSlice";
-import { AppDispatch } from "../../../ReduxState/store";
+import { Link, useNavigate } from "react-router-dom";
+import { currentVacations, fetchVacations, setVacations } from "../../../ReduxState/Slices/vacationSlice";
+import { AppDispatch, RootState } from "../../../ReduxState/store";
+import { currentUser, login, setCredentials } from "../../../ReduxState/Slices/authSlice";
+// import { login } from "../../../ReduxState/Slices/authSlice";
+import {Bounce, ToastContainer, toast} from "react-toastify";
+import 'react-toastify/dist/ReactToastify.css'
 interface FormInputs{
     email: string,
     pwd: string
 }
+const AUTH_URL = "http://localhost:3500/api/login/";
 
 function Login(): JSX.Element {
     const {register, handleSubmit} = useForm<FormInputs>();
-    const onSubmit: SubmitHandler<FormInputs> = data => {
-        console.log(data);
-    };
     const dispatch = useDispatch<AppDispatch>();
-    useEffect(()=>{
-        dispatch(fetchVacations());
-    },[])
+    const navigate = useNavigate();
+    const vacations = useSelector((state: RootState)=> state.reducers.vacations);
+    const user = useSelector((state: RootState)=> state.reducers.user);
+    const onSubmit: SubmitHandler<FormInputs> = async (data) => {
+        const notify = () => toast("wow so easy")
+        dispatch(login(data));
+        if(user){
+            dispatch(fetchVacations());
+            console.log(vacations);
+            navigate("/vacations");
+        }
+    };
     
     return (
         <div className="Login form-signin w-100 m-100 " style={{width:"6em", marginLeft: "auto", marginRight: "auto"}}>
+            <ToastContainer/>
             <form onSubmit={handleSubmit(onSubmit)} className="Login container d-flex flex-column my-3 " style={{width: "25rem"}}>
                 <div className="d-flex justify-content-center">
                     <h3 className="mb-3">Login</h3>
@@ -42,7 +54,7 @@ function Login(): JSX.Element {
                     <Link to="/Register">Dont have an account yet?</Link>
                 </div>
             </form>
-
+            
         </div>
     );
 }

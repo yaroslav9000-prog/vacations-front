@@ -8,7 +8,6 @@ function Header(): JSX.Element {
                 <h1 className="pe-3">Take a trip</h1>
                 <h6 className="pt-4">the rest is on us</h6>
             </div>
-            
         </div>
     );
 }

@@ -4,19 +4,25 @@ import { userEmailPwd } from '../../Models/user-credentials';
 import axios from 'axios';
 
 const AUTH_URL = "http://localhost:3500/api/login";
+ 
+export const login = createAsyncThunk('auth/login', async(data: userEmailPwd)=>{
+    
+    const response = await axios.get(AUTH_URL, {params: {
+        "email": data.email,
+        "pwd": data.pwd
+    }});
 
-
-export const login = createAsyncThunk('auth/login', async (emailPwd: userEmailPwd)=>{
-    const response = await axios.post(AUTH_URL, emailPwd);
     return response.data;
+
 })
 
 
 interface authState{
     user: null | User,
-    token: null | string
+    token: null | string,
+    role: 'user'|  'admin'| null;
 }
-const initialState: authState= {user: null, token: null}; 
+const initialState: authState= {user: null, token: null, role: null}; 
 const authSlice = createSlice({
     name: 'auth',
     initialState,
@@ -33,14 +39,21 @@ const authSlice = createSlice({
     },
     extraReducers: builder=>{
         builder.addCase(login.fulfilled, (state, action)=>{
-            state.token = action.payload["accessToken"];
-            state.user = action.payload["user"];
+            state.token = action.payload.token;
+            state.user = action.payload.user;
+            state.role = action.payload.user.role;
+        })
+        .addCase(login.pending, ()=>{
+            console.log("pending....")
+        })
+        .addCase(login.rejected, ()=>{
+            console.log("failed at promise")
         })
     }
 })
 export const {setCredentials, logOut} = authSlice.actions;
 
-export const selectCurrentUser = (state: authState)=> state.user;
-export const selectCurrentToken = (state: authState) => state.token;
+export const currentUser = (state: authState)=> state.user;
+export const currentToken = (state: authState) => state.token;
 
 export default authSlice.reducer;

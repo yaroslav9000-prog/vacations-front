@@ -4,12 +4,13 @@ import { RootState } from "../../../ReduxState/store";
 import { Vacation } from "../../../Models/Vacation";
 import VacationCard from "../../VacationCard/VacationCard";
 import { useState } from "react";
+// import { currentVacations } from "../../../ReduxState/Slices/vacationSlice";
 
 function Vacations(): JSX.Element {
-    const vacations = useSelector((state:RootState)=> state.reducers.vacations.value)
+    const vacations = useSelector((state:RootState)=> state.reducers.vacations.value);
     
     const ITEMS_PER_PAGE = 10;
-    const totalPages = Math.ceil(vacations!.length / 10);
+    const totalPages = Math.ceil(vacations.length / 10);
     const [currentPage, setCurrentPage] = useState(1);
     const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
     const endIndex = currentPage * ITEMS_PER_PAGE - 1;
@@ -51,9 +52,7 @@ function Vacations(): JSX.Element {
         setCurrentPage(currentPage + 1);
     }
 
-    const renderedVacations = vacations?vacations.slice(startIndex, endIndex).map((item: Vacation)=>(
-        <VacationCard vacation={item}/>
-    )): <p>No vacations to show</p>
+    const renderedVacations = vacations.length > 0?<p>No vacations to show</p>:vacations.slice(startIndex, endIndex).map((item: Vacation)=>(<VacationCard vacation={item}/>))
     return (
         <div className="Vacations container justify-content-center">
 			<div className="row row-cols-auto px-4" >

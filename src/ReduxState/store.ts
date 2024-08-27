@@ -1,4 +1,4 @@
-import {combineReducers, configureStore} from "@reduxjs/toolkit";
+import {Action, combineReducers, configureStore, ThunkAction} from "@reduxjs/toolkit";
 import vacationReducer from "./Slices/vacationSlice";
 import userReducer from "./Slices/authSlice";
 //I need reducers for vacation list
@@ -21,3 +21,4 @@ export type AppStore = typeof store
 export type AppDispatch = typeof store.dispatch
 // Same for the `RootState` type
 export type RootState = ReturnType<typeof store.getState>
+export type AppThunk = ThunkAction<void, RootState, unknown, Action>
