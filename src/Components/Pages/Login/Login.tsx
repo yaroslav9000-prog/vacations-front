@@ -27,7 +27,7 @@ function Login(): JSX.Element {
         const notify = () => toast("wow so easy")
         dispatch(login(data));
         if(user){
-            dispatch(fetchVacations());
+            await dispatch(fetchVacations());
             console.log(vacations);
             navigate("/vacations");
         }

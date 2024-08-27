@@ -35,12 +35,14 @@ export const editVacation = createAsyncThunk('vacations/editVacation', async(new
 
 export interface VacationsState{
     value:  any[],
-    state: 'idle'|'loading'|'failed'
+    state: 'idle'|'loading'|'failed',
+    images: string | null
 }
 
 const initialState: VacationsState = {
     value: [],
-    state: 'idle'
+    state: 'idle',
+    images: null
 };
 
 const vacationsSlice = createSlice({
@@ -60,14 +62,17 @@ const vacationsSlice = createSlice({
     },
     extraReducers: builder=>{
         builder.addCase(fetchVacations.fulfilled, (state, action)=>{
-          const loadedVacations = action.payload;
+          const loadedVacations = action.payload.vacations;
           console.log(loadedVacations);
           state.value = loadedVacations;
+          state.images = action.payload.images
         })
         .addCase(fetchVacations.pending, (state, action)=>{
+          state.state = "loading";
           console.log("pending for data");
         })
         .addCase(fetchVacations.rejected, (state, action)=>{
+          state.state = "failed";
           console.log("Got rejected");
         })
     }
@@ -75,4 +80,5 @@ const vacationsSlice = createSlice({
 export const {setVacations, addVacation/*editVacation*/} = vacationsSlice.actions;
 export const currentVacations = (state: RootState)=> state.reducers.vacations.value;
 export const currentVacationState = (state: RootState)=> state.reducers.vacations.state;
+export const currentImagesPath = (state: RootState)=> state.reducers.vacations.images;
 export default vacationsSlice.reducer;
