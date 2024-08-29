@@ -1,7 +1,5 @@
-import { ObjectId } from 'mongodb';
 import {createSlice, createAsyncThunk} from "@reduxjs/toolkit";
 import { Vacation } from "../../Models/Vacation";
-import mongoose from 'mongoose';
 import axios from 'axios';
 import { RootState } from '../store';
 
@@ -35,14 +33,12 @@ export const editVacation = createAsyncThunk('vacations/editVacation', async(new
 
 export interface VacationsState{
     value:  any[],
-    state: 'idle'|'loading'|'failed',
-    images: string | null
+    state: 'idle'|'loading'|'failed'
 }
 
 const initialState: VacationsState = {
     value: [],
-    state: 'idle',
-    images: null
+    state: 'idle'
 };
 
 const vacationsSlice = createSlice({
@@ -64,8 +60,8 @@ const vacationsSlice = createSlice({
         builder.addCase(fetchVacations.fulfilled, (state, action)=>{
           const loadedVacations = action.payload.vacations;
           console.log(loadedVacations);
+          state.state = "idle";
           state.value = loadedVacations;
-          state.images = action.payload.images
         })
         .addCase(fetchVacations.pending, (state, action)=>{
           state.state = "loading";
@@ -75,10 +71,20 @@ const vacationsSlice = createSlice({
           state.state = "failed";
           console.log("Got rejected");
         })
+        .addCase(addNewVacation.fulfilled,(state, action)=>{
+          state.value.push(action.payload);
+        })
+        .addCase(addNewVacation.pending, (state, action)=>{
+          console.log('loading');
+          state.state = 'loading';
+        })
+        .addCase(addNewVacation.rejected,(state, action)=>{
+          console.log('failed to update state and request');
+          state.state = 'failed';
+        })
     }
 })
 export const {setVacations, addVacation/*editVacation*/} = vacationsSlice.actions;
 export const currentVacations = (state: RootState)=> state.reducers.vacations.value;
 export const currentVacationState = (state: RootState)=> state.reducers.vacations.state;
-export const currentImagesPath = (state: RootState)=> state.reducers.vacations.images;
 export default vacationsSlice.reducer;

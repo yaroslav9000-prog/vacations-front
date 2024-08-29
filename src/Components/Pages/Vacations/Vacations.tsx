@@ -52,7 +52,7 @@ function Vacations(): JSX.Element {
         setCurrentPage(currentPage + 1);
     }
 
-    const renderedVacations = vacations.length == 0?<p>No vacations to show</p>:vacations.slice(startIndex, endIndex).map((item: Vacation)=>(<VacationCard vacation={item}/>))
+    const renderedVacations = vacations.length == 0?<p>No vacations to show</p>:vacations.slice(startIndex, endIndex).map((item: Vacation)=>(<VacationCard vacation={item} />))
     return (
         <div className="Vacations container justify-content-center">
 			<div className="row row-cols-auto px-4" >

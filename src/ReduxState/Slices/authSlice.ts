@@ -42,6 +42,7 @@ const authSlice = createSlice({
             state.token = action.payload.token;
             state.user = action.payload.user;
             state.role = action.payload.user.role;
+            console.log(action.payload.cookie);
         })
         .addCase(login.pending, ()=>{
             console.log("pending....")
