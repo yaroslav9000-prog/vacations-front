@@ -17,7 +17,7 @@ function VacationCard(props: VacationInfo): JSX.Element {
     }
     return (
         <div className="VacationCard card " style={{width: "18rem", height: "24rem"}} >
-			<img src={'http://localhost:3500/' + props.vacation.imageName} alt="card-image-top" />
+			<img src={'http://localhost:3500/images/' + props.vacation.imageName} alt={`${props.vacation.vacationDestination}`} />
             <div className="card-body">
                 <h5>{props.vacation.vacationDestination}</h5>
                 <div  onClick={()=>onClick()}>
