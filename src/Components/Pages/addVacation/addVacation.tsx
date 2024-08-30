@@ -5,6 +5,8 @@ import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { addVacation, currentVacations, fetchVacations, setVacations } from "../../../ReduxState/Slices/vacationSlice";
 import { AppDispatch } from "../../../ReduxState/store";
+import { format } from "date-fns";
+import { useState } from "react";
 
 type newVacation = {
     vacationDestination: string,
@@ -17,7 +19,11 @@ type newVacation = {
 
 function AddVacation(): JSX.Element {
     const dispatch = useDispatch<AppDispatch>();
+    const [startDate, setStartDate] = useState<Date>();
     const {register, handleSubmit} = useForm<newVacation>();
+    const handleDate = (value: any)=>{
+        setStartDate(value)
+    }
     const onSubmit: SubmitHandler<newVacation> = async (data) => {
         console.log(data);
         
@@ -30,6 +36,8 @@ function AddVacation(): JSX.Element {
           });
           dispatch(addVacation(response.data.vacation))
     }
+    const dateObj = new Date();
+    const currentDate = `${dateObj.getFullYear()}-${dateObj.getMonth()}-${dateObj.getDay()}`
     return(
         <div className="addVacation">
 			<form onSubmit={handleSubmit(onSubmit)} encType="multipart/form-data">
@@ -39,11 +47,11 @@ function AddVacation(): JSX.Element {
                 </div>
                 <div className="mb-3">
                     <label htmlFor="startDateVacation" className="form-label">Vacation start Date</label>
-                    <input type="date" {...register("startDateVacation")} className="form-control" id="startDateVacation" />
+                    <input min={currentDate} type="date" {...register("startDateVacation")} className="form-control" id="startDateVacation" />
                 </div>
                 <div className="mb-3">
                     <label htmlFor="endDateVacation" className="form-label">Vacation end Date</label>
-                    <input {...register("endDateVacation")} type="date" className="form-control" id="endDateVacation" />
+                    <input min={currentDate} {...register("endDateVacation")} type="date" className="form-control" id="endDateVacation" />
                 </div>
                 <div className="mb-3">
                     <label htmlFor="vacationDescription" className="form-label">Vacation description</label>
