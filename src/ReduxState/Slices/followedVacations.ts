@@ -4,65 +4,56 @@ import axios from "axios";
 import { fetchVacations } from "./vacationSlice";
 import { useSelector } from "react-redux";
 import { currentUser } from "./authSlice";
+import { RootState } from "../store";
+import mongoose from "mongoose";
 
-const userId = useSelector(currentUser)?.id;
-const followsEndpoint = "http://localhost:3500/api/follows/";
-const fetchFollows = createAsyncThunk('follows/fetchFollows', async()=>{
-    
-    const response = await axios.get(followsEndpoint + userId);
-    return response.data;
-})
-const makeFollow = createAsyncThunk("follows/makeFollow", async(vacationId: string)=>{
-    const response = await axios.post(followsEndpoint, {params: {"vacationId": vacationId, "userId": userId}});
-    return response.data;
-})
-const deleteFollow = createAsyncThunk("follows/makeFollow", async(vacationId: string)=>{
-    const response = await axios.delete(followsEndpoint, {params: {"vacationId": vacationId, "userId": userId}});
-    return response.data;
-})
+
+
 
 
 type FollowedVacas = {
     followed: any[],
-    allFollows: any[]
+    allFollows: any[],
+    allFollowsObject: any
 }
 const initialState: FollowedVacas = {
     followed: [],
-    allFollows: []
+    allFollows: [],
+    allFollowsObject: {}
 } 
 const followedSlice = createSlice({
     name: 'follows',
     initialState,
-    reducers:{},
-    extraReducers: builder=>{
-        builder.addCase(fetchVacations.fulfilled, (state, action)=>{
+    reducers:{
+        createFollowsObject: (state, action)=>{
+            for(let index = 0; index < action.payload.allFollows.length; index++){
+                if(state.allFollowsObject[`${state.allFollows[index].vacationID}`] == undefined){
+                    state.allFollowsObject[`${state.allFollows[index].vacationID}`] = 1;
+                }else{
+                    state.allFollowsObject[`${state.allFollows[index].vacationID}`]++;
+                }
+            }
+            console.log(state.allFollowsObject);
+        },
+        setFollows: (state, action)=>{
             state.allFollows = action.payload.allFollows;
-            state.followed = action.payload.userFollows
-        })
-        .addCase(fetchFollows.pending, ()=>{
-            console.log("pending");
-        })
-        .addCase(fetchFollows.rejected, (action)=>{
-            console.log("rejected"+ action);
-        })
-        .addCase(makeFollow.fulfilled, (state, action)=>{
+            state.followed = action.payload.userFollows;
+        },
+        makeFollow: (state, action)=>{
+            state.allFollows.push(action.payload);
             state.followed.push(action.payload);
-        })
-        .addCase(makeFollow.pending, ()=>{
-            console.log("rejected");
-        })
-        .addCase(makeFollow.rejected, (action)=>{
-            console.log("rejected"+ action);
-        })
-        .addCase(deleteFollow.fulfilled, (state, action)=>{
-            state.followed.filter((item: any)=> item.vacationID !== action.payload.data.vacatioID);
-        })
-        .addCase(deleteFollow.pending, ()=>{
-            console.log("pending");
-        })
-        .addCase(deleteFollow.rejected, (action)=>{
-            console.log("rejected"+ action);
-        })
-    }
+            if(!state.allFollowsObject) state.allFollowsObject[action.payload.vacationID] = 0;
+            state.allFollowsObject[action.payload.vacationID]+= 1;
+        },
+        deleteFollow: (state, action)=>{
+            state.allFollows = state.allFollows.filter(item=> (item.userID!== action.payload.userID && item.vacationID !== action.payload.vacationID));
+            state.allFollowsObject[action.payload.vacationID] --;
+            state.followed = state.followed.filter(item=> item.vacationID !== action.payload.vacationID);
+        }
 
+    }
 })
+export const {setFollows, makeFollow, deleteFollow, createFollowsObject} = followedSlice.actions;
+export const follows = (state: RootState)=> state.reducers.follows.allFollows;
+export const userFollows = (state: RootState)=> state.reducers.follows.followed;
+export default followedSlice.reducer;

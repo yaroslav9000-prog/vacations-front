@@ -1,17 +1,14 @@
-import "./VacationCard.css";
-import { Vacation } from "../../Models/Vacation";
-import { RootState } from "../../ReduxState/store";
-import { useSelector } from "react-redux";
 import { useState } from "react";
-import LikeButton from "../LikeButton/LikeButton";
+import { Vacation } from "../../Models/Vacation";
+import "./AdminVacaCard.css";
+import EditButton from "../EditButton/EditButton";
+import DeleteButton from "../DeleteButton/DeleteButton";
 
 type VacationInfo = {
     vacation : Vacation;
 }
 
-function VacationCard(props: VacationInfo): JSX.Element {
-    const user = useSelector((state: RootState)=> state.reducers.user.user)?.role;
-    const userID = useSelector((state: RootState)=> state.reducers.user.user?.id);
+function AdminVacaCard(props: VacationInfo): JSX.Element {
     const vacationID = props.vacation._id;
     const [descrip, setDescrip] = useState(false);
     
@@ -20,7 +17,7 @@ function VacationCard(props: VacationInfo): JSX.Element {
     }
     return (
         <div className="VacationCard card position-relative" style={{width: "18rem", height: "27rem", padding: "0"}} >
-			<img className="card-img-top w-100" src={'http://localhost:3500/images/' + props.vacation.imageName} alt={`${props.vacation.vacationDestination}`} style={{height: "12rem"}}/><div className="position-absolute top-20 start-20"><LikeButton vacationId={vacationID} style=""/></div>
+			<img className="card-img-top w-100" src={'http://localhost:3500/images/' + props.vacation.imageName} alt={`${props.vacation.vacationDestination}`} style={{height: "12rem"}}/><div className="position-absolute top-20 start-20"><EditButton vacationID={vacationID}/></div><div className="position-absolute top-0 end-0"><DeleteButton vacationID={vacationID}/></div>
             <div className="card-body">
                 <h5>{props.vacation.vacationDestination}</h5>
                 <div  onClick={()=>onClick()}>
@@ -36,4 +33,4 @@ function VacationCard(props: VacationInfo): JSX.Element {
     );
 }
 
-export default VacationCard;
+export default AdminVacaCard;

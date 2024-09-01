@@ -5,12 +5,13 @@ import {useDispatch} from "react-redux";
 import "./Login.css";
 import axios from "axios";
 import { Link, useNavigate } from "react-router-dom";
-import { currentVacations, fetchVacations, setVacations } from "../../../ReduxState/Slices/vacationSlice";
+import { fetchVacations } from "../../../ReduxState/Slices/vacationSlice";
 import { AppDispatch, RootState } from "../../../ReduxState/store";
-import { currentUser, login, setCredentials } from "../../../ReduxState/Slices/authSlice";
+import { login} from "../../../ReduxState/Slices/authSlice";
 // import { login } from "../../../ReduxState/Slices/authSlice";
 import {Bounce, ToastContainer, toast} from "react-toastify";
 import 'react-toastify/dist/ReactToastify.css'
+import { createFollowsObject, follows, setFollows } from "../../../ReduxState/Slices/followedVacations";
 interface FormInputs{
     email: string,
     pwd: string
@@ -18,20 +19,35 @@ interface FormInputs{
 const AUTH_URL = "http://localhost:3500/api/login/";
 
 function Login(): JSX.Element {
+    const notify = () => toast.error('Email and password don\'t match', {
+        position: "top-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "colored",
+        transition: Bounce,
+        });
     const {register, handleSubmit} = useForm<FormInputs>();
     const dispatch = useDispatch<AppDispatch>();
     const navigate = useNavigate();
-    const vacations = useSelector((state: RootState)=> state.reducers.vacations);
+    const vacations = useSelector((state: RootState)=> state.reducers.vacations.value);
     const user = useSelector((state: RootState)=> state.reducers.user);
+    const follows = useSelector((state: RootState)=> state.reducers.follows.allFollows);
     const onSubmit: SubmitHandler<FormInputs> = async (data) => {
-        const notify = () => toast("wow so easy")
         dispatch(login(data));
-        if(user){
-            await dispatch(fetchVacations());
-            console.log(vacations);
-            navigate("/vacations");
-        }
     };
+    useEffect(()=>{
+        if(user.status == "success" && user.role == "user"){
+            navigate("/vacations", {state: {message: "hello from login"}});
+        }else if(user.status == "success" && user.role == "admin"){
+            navigate("/AdminVacations")
+        }else{
+            notify();
+        }
+    }, [user])
     
     return (
         <div className="Login form-signin w-100 m-100 " style={{width:"6em", marginLeft: "auto", marginRight: "auto"}}>

@@ -20,9 +20,10 @@ export const login = createAsyncThunk('auth/login', async(data: userEmailPwd)=>{
 interface authState{
     user: null | User,
     token: null | string,
-    role: 'user'|  'admin'| null;
+    role: 'user'|  'admin'| null,
+    status: 'success' | 'idle' | 'pending' | 'rejected'
 }
-const initialState: authState= {user: null, token: null, role: null}; 
+const initialState: authState= {user: null, token: null, role: null, status: 'idle'}; 
 const authSlice = createSlice({
     name: 'auth',
     initialState,
@@ -39,15 +40,19 @@ const authSlice = createSlice({
     },
     extraReducers: builder=>{
         builder.addCase(login.fulfilled, (state, action)=>{
+            
             state.token = action.payload.token;
             state.user = action.payload.user;
             state.role = action.payload.user.role;
             console.log(action.payload.cookie);
+            state.status = 'success';
         })
-        .addCase(login.pending, ()=>{
+        .addCase(login.pending, (state)=>{
+            state.status = 'pending';
             console.log("pending....")
         })
-        .addCase(login.rejected, ()=>{
+        .addCase(login.rejected, (state)=>{
+            state.status = 'rejected';
             console.log("failed at promise")
         })
     }

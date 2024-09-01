@@ -1,6 +1,7 @@
 import {Action, combineReducers, configureStore, ThunkAction} from "@reduxjs/toolkit";
 import vacationReducer from "./Slices/vacationSlice";
 import userReducer from "./Slices/authSlice";
+import followReducer from "./Slices/followedVacations"
 //I need reducers for vacation list
 //Regular user will be able to follow and unfollow vacation
 //Since that i need state management for followed vacations
@@ -10,7 +11,7 @@ import userReducer from "./Slices/authSlice";
 
 
 
-const reducers = combineReducers({vacations: vacationReducer, user: userReducer});
+const reducers = combineReducers({vacations: vacationReducer, user: userReducer, follows: followReducer});
 
 export const store = configureStore({
     reducer: {reducers},

@@ -8,6 +8,7 @@ import Vacations from "../../Pages/Vacations/Vacations";
 import Register from "../../Pages/Register/Register";
 import Welcome from "../../Pages/Welcome/Welcome";
 import AddVacation from "../../Pages/addVacation/addVacation";
+import EditVacations from "../../Pages/EditVacations/EditVacations";
 
 function Main(): JSX.Element {
     return (
@@ -19,6 +20,7 @@ function Main(): JSX.Element {
                 <Route path="/vacations" element={<Vacations/>}/>
                 <Route path="/AdminVacations" element={<AdminVacations/>}/>
                 <Route path="/addVacation" element={<AddVacation/>}/>
+                <Route path="/EditVacation/:id" element={<EditVacations/>}/>
                 <Route path="/vacationStats" element={<GraphVacation/>}/>
                 <Route path="/*" element={<Page404/>}/>
             </Routes>

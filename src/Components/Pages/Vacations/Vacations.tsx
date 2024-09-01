@@ -1,14 +1,18 @@
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import "./Vacations.css";
-import { RootState } from "../../../ReduxState/store";
+import { AppDispatch, RootState}  from "../../../ReduxState/store";
 import { Vacation } from "../../../Models/Vacation";
 import VacationCard from "../../VacationCard/VacationCard";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { fetchVacations } from "../../../ReduxState/Slices/vacationSlice";
+import { createFollowsObject, setFollows } from "../../../ReduxState/Slices/followedVacations";
+import axios, { AxiosResponse } from "axios";
 // import { currentVacations } from "../../../ReduxState/Slices/vacationSlice";
 
 function Vacations(): JSX.Element {
     const vacations = useSelector((state:RootState)=> state.reducers.vacations.value);
-    
+    const userID = useSelector((state:RootState)=> state.reducers.user.user?.id);
+    const dispatch = useDispatch<AppDispatch>();
     const ITEMS_PER_PAGE = 10;
     const totalPages = Math.ceil(vacations.length / 10);
     const [currentPage, setCurrentPage] = useState(1);
@@ -36,7 +40,7 @@ function Vacations(): JSX.Element {
     }
     const returnArrayOfThree =()=>{
         const myArray = configNumArray();
-    
+
         return [myArray[currentPage - 2]?myArray[currentPage - 2]: "", myArray[currentPage -1], myArray[currentPage]? myArray[currentPage]: ""];
     }
 
@@ -51,8 +55,21 @@ function Vacations(): JSX.Element {
         if(currentPage === totalPages) return;
         setCurrentPage(currentPage + 1);
     }
-
-    const renderedVacations = vacations.length == 0?<p>No vacations to show</p>:vacations.slice(startIndex, endIndex).map((item: Vacation)=>(<VacationCard vacation={item} />))
+    const getFollows = async()=>{
+        return (await axios.get("http://localhost:3500/api/follows/" + userID)).data;
+    }
+    const renderedVacations = 
+    vacations.length == 0?<p>No vacations to show</p>:vacations.slice(startIndex, endIndex).map((item: Vacation)=>(<VacationCard vacation={item} />))
+    useEffect(()=>{
+        dispatch(fetchVacations());
+        const followsResponse = getFollows();
+        followsResponse.then(response=> {
+            dispatch(setFollows(response));
+            dispatch(createFollowsObject(response));
+        })
+        // dispatch(setFollows(followsResponse.data));
+        // dispatch(createFollowsObject(followsResponse.data))
+    },[])
     return (
         <div className="Vacations container justify-content-center">
 			<div className="row row-cols-auto px-4" >
@@ -74,3 +91,5 @@ function Vacations(): JSX.Element {
 }
 
 export default Vacations;
+
+
