@@ -11,7 +11,7 @@ import { login} from "../../../ReduxState/Slices/authSlice";
 // import { login } from "../../../ReduxState/Slices/authSlice";
 import {Bounce, ToastContainer, toast} from "react-toastify";
 import 'react-toastify/dist/ReactToastify.css'
-import { createFollowsObject, follows, setFollows } from "../../../ReduxState/Slices/followedVacations";
+import { /*createFollowsObject,*/ follows, setFollows } from "../../../ReduxState/Slices/followedVacations";
 interface FormInputs{
     email: string,
     pwd: string
@@ -44,7 +44,7 @@ function Login(): JSX.Element {
             navigate("/vacations", {state: {message: "hello from login"}});
         }else if(user.status == "success" && user.role == "admin"){
             navigate("/AdminVacations")
-        }else{
+        }else if(user.status == "rejected" && user.token == null){
             notify();
         }
     }, [user])

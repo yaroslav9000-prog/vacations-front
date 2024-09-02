@@ -65,11 +65,12 @@ function Vacations(): JSX.Element {
         const followsResponse = getFollows();
         followsResponse.then(response=> {
             dispatch(setFollows(response));
-            dispatch(createFollowsObject(response));
+            axios.get("http://localhost:3500/api/vacations/vacationReport").then(response=> response.data).then(data=> dispatch(createFollowsObject(data)))
+            
         })
         // dispatch(setFollows(followsResponse.data));
         // dispatch(createFollowsObject(followsResponse.data))
-    },[])
+    },[vacations])
     return (
         <div className="Vacations container justify-content-center">
 			<div className="row row-cols-auto px-4" >

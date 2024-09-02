@@ -1,4 +1,5 @@
 import "./Register.css";
+import {Bounce, ToastContainer, toast} from "react-toastify";
 import {SubmitHandler, useForm} from "react-hook-form";
 import axios from "axios";
 import { Link, useNavigate } from "react-router-dom";
@@ -13,16 +14,35 @@ function Register(): JSX.Element {
     }
     
     const {register, handleSubmit, formState: {errors}} = useForm<FormInputs>({criteriaMode: "all"});
+    const notify = () => toast.error('Email is already in use try another one', {
+        position: "top-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "colored",
+        transition: Bounce,
+        });
     const navigate = useNavigate();
-    const onSubmit: SubmitHandler<FormInputs> = data => {
+    const onSubmit: SubmitHandler<FormInputs> = async data => {
         console.log(data)
-        navigate("/vacations")
+        const response = await axios.post("http://localhost:3500/api/register/", data);
+        if(response.status == 400){
+            notify()
+        }else{
+
+            navigate("/Login");
+        }
+        
     };
     
     
 
     return (
         <div className="Register container w-100 m-100">
+            <ToastContainer/>
             <form onSubmit={handleSubmit(onSubmit)}>
                 <div className="d-flex justify-content-center">
                     <h1 className="h3 mb-3">Registration</h1>
@@ -74,7 +94,7 @@ function Register(): JSX.Element {
                       </svg>{message}</p>}/>
                 </div>
                 <input className="btn btn-success w-100 mb-3" type="submit" value={"Register"}/>
-                <div className="d-flex justify-content-center">
+                <div className="d-flex justify-content-center mb-3">
                     <Link to="/Login">Already have an account?</Link>
                 </div>
             </form>

@@ -23,13 +23,7 @@ export const addNewVacation = createAsyncThunk('vacations/addNewVacation', async
     return err.message;
   }
 })
-export const editVacation = createAsyncThunk('vacations/editVacation', async(newValues)=>{
-  try{
-    const response = await axios.post(EDIT_VACATION_URL, newValues);
-  }catch(err: any){
-    return err.message;
-  }
-})
+
 
 export interface VacationsState{
     value:  any[],
@@ -52,9 +46,21 @@ const vacationsSlice = createSlice({
         addVacation: (state, action)=>{
             state.value.push(action.payload);
         },
-        // editVacation: (state, action)=>{
-        //   const editedVacation: Vacation = state?.value.find((item: Vacation)=> item._id === action.payload.)
-        // }
+        editVacation: (state, action)=>{
+          const oldVacationIndex = state?.value.findIndex((item: Vacation)=> item._id === action.payload.id);
+          state.value[oldVacationIndex] = {
+            _id: action.payload.id,
+            vacationDestination : action.payload.updatedVacation.vacationDestination,
+            vacationDescription : action.payload.updatedVacation.vacationDescription,
+            startDateVacation   : action.payload.updatedVacation.startDateVacation,
+            endDateVacation     : action.payload.updatedVacation.endDateVacation,
+            vacationPrice       : action.payload.updatedVacation.vacationPrice
+
+          }
+        },
+        deleteVacation: (state, action)=>{
+          state.value = state.value.filter(item=> item._id !== action.payload )
+        }
     },
     extraReducers: builder=>{
         builder.addCase(fetchVacations.fulfilled, (state, action)=>{
@@ -84,7 +90,7 @@ const vacationsSlice = createSlice({
         })
     }
 })
-export const {setVacations, addVacation/*editVacation*/} = vacationsSlice.actions;
+export const {setVacations, addVacation, editVacation, deleteVacation} = vacationsSlice.actions;
 export const currentVacations = (state: RootState)=> state.reducers.vacations.value;
 export const currentVacationState = (state: RootState)=> state.reducers.vacations.state;
 export default vacationsSlice.reducer;

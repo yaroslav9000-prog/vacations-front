@@ -1,4 +1,4 @@
-import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
+import { createAsyncThunk, createSlice, current } from "@reduxjs/toolkit";
 import { Vacation } from "../../Models/Vacation";
 import axios from "axios";
 import { fetchVacations } from "./vacationSlice";
@@ -26,15 +26,13 @@ const followedSlice = createSlice({
     initialState,
     reducers:{
         createFollowsObject: (state, action)=>{
-            for(let index = 0; index < action.payload.allFollows.length; index++){
-                if(state.allFollowsObject[`${state.allFollows[index].vacationID}`] == undefined){
-                    state.allFollowsObject[`${state.allFollows[index].vacationID}`] = 1;
-                }else{
-                    state.allFollowsObject[`${state.allFollows[index].vacationID}`]++;
-                }
-            }
-            console.log(state.allFollowsObject);
+            action.payload.theReport.map((item:any)=> {
+                state.allFollowsObject[`${item._id}`] = item.followers.length;
+            })
         },
+        makeZeroFollows: (state)=>{
+            state.allFollowsObject = {};
+        },        
         setFollows: (state, action)=>{
             state.allFollows = action.payload.allFollows;
             state.followed = action.payload.userFollows;
@@ -53,7 +51,7 @@ const followedSlice = createSlice({
 
     }
 })
-export const {setFollows, makeFollow, deleteFollow, createFollowsObject} = followedSlice.actions;
+export const {setFollows, makeFollow, makeZeroFollows,deleteFollow, createFollowsObject} = followedSlice.actions;
 export const follows = (state: RootState)=> state.reducers.follows.allFollows;
 export const userFollows = (state: RootState)=> state.reducers.follows.followed;
 export default followedSlice.reducer;

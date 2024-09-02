@@ -67,7 +67,7 @@ function AdminVacations(): JSX.Element {
         const followsResponse = getFollows();
         followsResponse.then(response=> {
             dispatch(setFollows(response));
-            dispatch(createFollowsObject(response));
+            axios.get("http://localhost:3500/api/vacations/vacationReport").then(response=> response.data).then(data=> dispatch(createFollowsObject(data)));
         })
 
     },[])
@@ -87,6 +87,7 @@ function AdminVacations(): JSX.Element {
                     <li className="page-item" style={{width: "2rem"}} onClick={()=>nextPage()}><a className="page-link">&raquo;</a></li>
                 </ul>
             </nav>
+            
         </div>
     );
 }

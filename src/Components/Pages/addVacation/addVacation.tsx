@@ -6,7 +6,7 @@ import axios from "axios";
 import { addVacation, currentVacations, fetchVacations, setVacations } from "../../../ReduxState/Slices/vacationSlice";
 import { AppDispatch } from "../../../ReduxState/store";
 import { format } from "date-fns";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 type newVacation = {
     vacationDestination: string,
@@ -19,11 +19,10 @@ type newVacation = {
 
 function AddVacation(): JSX.Element {
     const dispatch = useDispatch<AppDispatch>();
-    const [startDate, setStartDate] = useState<Date>();
-    const {register, handleSubmit} = useForm<newVacation>();
-    const handleDate = (value: any)=>{
-        setStartDate(value)
-    }
+    const {register, handleSubmit, watch, setValue} = useForm<newVacation>();
+    const navigate = useNavigate();
+    const startDate = watch('startDateVacation');
+    const endDate = watch('endDateVacation');
     const onSubmit: SubmitHandler<newVacation> = async (data) => {
         console.log(data);
         
@@ -35,11 +34,29 @@ function AddVacation(): JSX.Element {
             data: data
           });
           dispatch(addVacation(response.data.vacation))
+          navigate("/AdminVacations");
     }
-    const dateObj = new Date();
-    const currentDate = `${dateObj.getFullYear()}-${dateObj.getMonth()}-${dateObj.getDay()}`
+
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const todayString = today.toISOString().split('T')[0];
+
+    useEffect(() => {
+        if (startDate) {
+            const startDateObj = new Date(startDate);
+            if (startDateObj < today) {
+                setValue('startDateVacation', todayString);
+            }
+            if (endDate) {
+                const endDateObj = new Date(endDate);
+                if (endDateObj < startDateObj || endDateObj < today) {
+                    setValue('endDateVacation', startDate);
+                }
+            }
+        }
+    }, [startDate, endDate]);
     return(
-        <div className="addVacation">
+        <div className="addVacation justify-content-center" style={{width: "80%"}}>
 			<form onSubmit={handleSubmit(onSubmit)} encType="multipart/form-data">
                 <div className="mb-3">
                     <label htmlFor="vacationDestination" className="form-label">Vacation Destination</label>
@@ -47,11 +64,11 @@ function AddVacation(): JSX.Element {
                 </div>
                 <div className="mb-3">
                     <label htmlFor="startDateVacation" className="form-label">Vacation start Date</label>
-                    <input min={currentDate} type="date" {...register("startDateVacation")} className="form-control" id="startDateVacation" />
+                    <input  type="date" {...register("startDateVacation")} className="form-control" id="startDateVacation" />
                 </div>
                 <div className="mb-3">
                     <label htmlFor="endDateVacation" className="form-label">Vacation end Date</label>
-                    <input min={currentDate} {...register("endDateVacation")} type="date" className="form-control" id="endDateVacation" />
+                    <input  {...register("endDateVacation")} type="date" className="form-control" id="endDateVacation" />
                 </div>
                 <div className="mb-3">
                     <label htmlFor="vacationDescription" className="form-label">Vacation description</label>
@@ -59,11 +76,11 @@ function AddVacation(): JSX.Element {
                 </div>
                 <div className="mb-3">
                     <label htmlFor="vacationPrice" className="form-label">Vacation Price</label>
-                    <input {...register("vacationPrice")} type="number" className="form-control" id="vacationPrice"/>
+                    <input {...register("vacationPrice", {required: true})} type="number" className="form-control" id="vacationPrice"/>
                 </div>
                 <div className="mb-3">
                     <label htmlFor="formFile" className="form-label">Choose your image</label>
-                    <input {...register("uploaded_image")} className="form-control" name="uploaded_image" type="file" id="formFile" />
+                    <input {...register("uploaded_image", {required: true, min: 0, max: 10000})} className="form-control" name="uploaded_image" type="file" id="formFile" />
                 </div>
                 <div className="mb-3 d-flex">
                     <input type="submit" className="btn btn-success"/>
