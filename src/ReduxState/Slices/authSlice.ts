@@ -2,6 +2,8 @@ import {createAsyncThunk, createSlice} from '@reduxjs/toolkit';
 import { User } from '../../Models/User';
 import { userEmailPwd } from '../../Models/user-credentials';
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
+import { RootState } from '../store';
 
 const AUTH_URL = "http://localhost:3500/api/login";
  
@@ -11,10 +13,12 @@ export const login = createAsyncThunk('auth/login', async(data: userEmailPwd)=>{
         "email": data.email,
         "pwd": data.pwd
     }});
-
+    console.log(response.data["token"]);
     return response.data;
 
 })
+
+
 
 
 interface authState{
@@ -42,10 +46,9 @@ const authSlice = createSlice({
     extraReducers: builder=>{
         builder.addCase(login.fulfilled, (state, action)=>{
             
-            state.token = action.payload.token;
+            state.token = action.payload["token"];
             state.user = action.payload.user;
             state.role = action.payload.user.role;
-            console.log(action.payload.cookie);
             state.status = 'success';
         })
         .addCase(login.pending, (state)=>{
@@ -54,13 +57,14 @@ const authSlice = createSlice({
         })
         .addCase(login.rejected, (state)=>{
             state.status = 'rejected';
-            console.log("failed at promise")
+            console.log("failed at promise");
+            
         })
     }
 })
 export const {setCredentials, logOut} = authSlice.actions;
 
-export const currentUser = (state: authState)=> state.user;
-export const currentToken = (state: authState) => state.token;
+export const currentUser = (state: RootState)=> state.reducers.user.token;
+export const currentToken = (state: RootState) => state.reducers.user.token;
 
 export default authSlice.reducer;

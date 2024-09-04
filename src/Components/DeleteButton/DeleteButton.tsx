@@ -15,10 +15,11 @@ function DeleteButton({vacationID}: VacationID): JSX.Element {
     const dispatch = useDispatch<AppDispatch>();
     const navigate = useNavigate();
     const modalDismiss = useRef();
+    const currentToken = useSelector((state: RootState)=> state.reducers.user.token);
     const allFollows = useSelector((state: RootState)=> state.reducers.follows.allFollows);
     const handleDelete = async () =>{
         console.log(vacationID);
-        const response = await axios.delete(`http://localhost:3500/api/vacations/deleteVacation/${vacationID}`); 
+        const response = await axios.delete(`http://localhost:3500/api/vacations/deleteVacation/${vacationID}`, {headers:{"Authorization": "Bearer " + currentToken}}); 
         dispatch(deleteVacation(vacationID));
         navigate("/AdminVacations")
     }

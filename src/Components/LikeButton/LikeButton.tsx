@@ -30,20 +30,28 @@ function LikeButton(props: bootstrapStyle): JSX.Element {
     const allFollower =  useSelector((state: RootState)=> state.reducers.follows.allFollowsObject)[props.vacationId];
     const buttonStyles=  allFollower?  "justify-content-between": "justify-content-center";
     const isFollowed = useSelector((state: RootState)=> state.reducers.follows.followed).find(item=> item.userID == userID && item.vacationID == props.vacationId);
-    
+    const currentToken = useSelector((state: RootState)=> state.reducers.user.token);
     const handleFollow = async ()=>{
         const data: PostData = {
             userID: userID,
             vacationID: props.vacationId 
         };
         if(isFollowed){
-             const response = await axios.delete("http://localhost:3500/api/follows/", {data: data});
+            console.log(currentToken);
+             const response = await axios.delete("http://localhost:3500/api/follows/", {
+                headers: {"Authorization": "Bearer " + currentToken},
+                data: data
+            });
              console.log(response.data.deletedFollow)
-             dispatch(deleteFollow(await response.data.deletedFollow))
+             dispatch(deleteFollow(response.data.deletedFollow))
         }else{
-            const response = await axios.post("http://localhost:3500/api/follows/", {data: data});
+            console.log(currentToken);
+            const response = await axios.post("http://localhost:3500/api/follows/",{
+                headers: {"Authorization": "Bearer " + currentToken},
+                data: data
+            });
             console.log(response.data.addedFollow);
-            dispatch(makeFollow(await response.data.addedFollow))
+            dispatch(makeFollow(response.data.addedFollow))
         }
         //user 66bc8069dafa46c157af6b80
         //66c347f97a419f60ec1c511f

@@ -27,6 +27,7 @@ function EditVacations(): JSX.Element {
     const inputRef = useRef();
     const navigate = useNavigate();
     const dispatch = useDispatch<AppDispatch>();
+    const currentToken = useSelector((state: RootState)=> state.reducers.user.token);
     
     const startDate = watch('startDateVacation');
     const endDate = watch('endDateVacation');
@@ -36,7 +37,7 @@ function EditVacations(): JSX.Element {
         const response = await axios({
             method: 'post',
             url: "http://localhost:3500/api/vacations/editVacation/" + currentVacation._id,
-            headers: {"Content-Type": "multipart/form-data"}, 
+            headers: {"Content-Type": "multipart/form-data", "Authorization": "Bearer "+ currentToken}, 
              // This is the body part
             data: data
           });

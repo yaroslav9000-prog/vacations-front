@@ -1,12 +1,13 @@
 import "./addVacation.css";
 import {SubmitHandler, useForm} from "react-hook-form";
-import {useDispatch} from "react-redux";
+import {useDispatch, useSelector} from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { addVacation, currentVacations, fetchVacations, setVacations } from "../../../ReduxState/Slices/vacationSlice";
-import { AppDispatch } from "../../../ReduxState/store";
+import { AppDispatch, RootState } from "../../../ReduxState/store";
 import { format } from "date-fns";
 import { useEffect, useState } from "react";
+import { currentToken } from "../../../ReduxState/Slices/authSlice";
 
 type newVacation = {
     vacationDestination: string,
@@ -23,13 +24,14 @@ function AddVacation(): JSX.Element {
     const navigate = useNavigate();
     const startDate = watch('startDateVacation');
     const endDate = watch('endDateVacation');
+    const currentToken = useSelector((state:RootState)=> state.reducers.user.token);
     const onSubmit: SubmitHandler<newVacation> = async (data) => {
         console.log(data);
         
         const response = await axios({
             method: 'post',
             url: "http://localhost:3500/api/vacations/addVacation",
-            headers: {"Content-Type": "multipart/form-data"}, 
+            headers: {"Content-Type": "multipart/form-data", "Authorization": "Bearer " + currentToken}, 
              // This is the body part
             data: data
           });

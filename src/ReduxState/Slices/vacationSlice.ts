@@ -17,7 +17,7 @@ export const fetchVacations = createAsyncThunk('vacations/fetchVacations', async
 
 export const addNewVacation = createAsyncThunk('vacations/addNewVacation', async(newPost)=>{
   try{
-    const response = await axios.post(CREATE_VACATION_URL, newPost);
+    const response = await axios.post(CREATE_VACATION_URL, newPost, );
     return response.data;
   }catch(err: any){
     return err.message;
@@ -27,12 +27,16 @@ export const addNewVacation = createAsyncThunk('vacations/addNewVacation', async
 
 export interface VacationsState{
     value:  any[],
-    state: 'idle'|'loading'|'failed'
+    state: 'idle'|'loading'|'failed',
+    started: any[],
+    notStarted: any[]
 }
 
 const initialState: VacationsState = {
     value: [],
-    state: 'idle'
+    state: 'idle',
+    started: [],
+    notStarted: []
 };
 
 const vacationsSlice = createSlice({
@@ -40,8 +44,13 @@ const vacationsSlice = createSlice({
     initialState,
     reducers: {
         setVacations: (state, action)=>{
-            const {vacations} = action.payload;
-            state = vacations;
+          state.value = action.payload;
+        },
+        setStarted: (state, action)=>{
+          state.started = action.payload;
+        },
+        setNotStarted: (state, action)=>{
+          state.notStarted = action.payload;
         },
         addVacation: (state, action)=>{
             state.value.push(action.payload);
@@ -61,36 +70,9 @@ const vacationsSlice = createSlice({
         deleteVacation: (state, action)=>{
           state.value = state.value.filter(item=> item._id !== action.payload )
         }
-    },
-    extraReducers: builder=>{
-        builder.addCase(fetchVacations.fulfilled, (state, action)=>{
-          const loadedVacations = action.payload.vacations;
-          console.log(loadedVacations);
-          state.state = "idle";
-          state.value = loadedVacations;
-        })
-        .addCase(fetchVacations.pending, (state, action)=>{
-          state.state = "loading";
-          console.log("pending for data");
-        })
-        .addCase(fetchVacations.rejected, (state, action)=>{
-          state.state = "failed";
-          console.log("Got rejected");
-        })
-        .addCase(addNewVacation.fulfilled,(state, action)=>{
-          state.value.push(action.payload);
-        })
-        .addCase(addNewVacation.pending, (state, action)=>{
-          console.log('loading');
-          state.state = 'loading';
-        })
-        .addCase(addNewVacation.rejected,(state, action)=>{
-          console.log('failed to update state and request');
-          state.state = 'failed';
-        })
     }
 })
-export const {setVacations, addVacation, editVacation, deleteVacation} = vacationsSlice.actions;
+export const {setVacations, addVacation, editVacation, deleteVacation, setNotStarted, setStarted} = vacationsSlice.actions;
 export const currentVacations = (state: RootState)=> state.reducers.vacations.value;
 export const currentVacationState = (state: RootState)=> state.reducers.vacations.state;
 export default vacationsSlice.reducer;

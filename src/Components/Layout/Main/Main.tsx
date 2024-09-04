@@ -14,6 +14,7 @@ import { AppDispatch, RootState } from "../../../ReduxState/store";
 import { logOut } from "../../../ReduxState/Slices/authSlice";
 import { setVacations } from "../../../ReduxState/Slices/vacationSlice";
 import { makeZeroFollows, setFollows } from "../../../ReduxState/Slices/followedVacations";
+import axios from "axios";
 
 
 
@@ -23,12 +24,22 @@ function Main(): JSX.Element {
     const navigate = useNavigate();
     const logout = ()=>{
         dispatch(logOut());
-        dispatch(setVacations({vacations: null}));
-        dispatch(setFollows({allFollows: null, userFollows: null}));
+        dispatch(setVacations([]));
+        dispatch(setFollows({allFollows: [], userFollows: []}));
         dispatch(makeZeroFollows())
-        dispatch(setVacations({vacations: null}))
         navigate("/");
     }
+    const currentToken = useSelector((state: RootState)=> state.reducers.user.token);
+    
+    const downloadCSV = async ()=>{
+        const response = (await axios.get("http://localhost:3500/api/files/csv", {headers: {
+            "Content-Type": "application/csv",
+            "Authorization": "Bearer " + currentToken
+        }}));
+        console.log(response);
+        return response;
+    }
+    
     const userList = 
     <ul className="list-group list-group-flush">
     <li className="list-group-item btn" data-bs-toggle="collapse" data-bs-target="#collapseWidthExample" aria-expanded="false" onClick={()=>logout()}>Log out</li>
@@ -37,7 +48,7 @@ function Main(): JSX.Element {
     <ul className="list-group list-group-flush">
     <li className="list-group-item btn" onClick={()=> navigate("/vacationStats")} data-bs-toggle="collapse" data-bs-target="#collapseWidthExample" aria-expanded="false">Vacation Report</li>
     <li className="list-group-item btn" data-bs-toggle="collapse" data-bs-target="#collapseWidthExample" aria-expanded="false" onClick={()=> navigate("/AddVacation")} >Add new Vacation</li>
-    <li className="list-group-item btn" data-bs-toggle="collapse" data-bs-target="#collapseWidthExample" aria-expanded="false">Get Excel file</li>
+    <li onClick={()=>downloadCSV()} className="list-group-item btn" data-bs-toggle="collapse" data-bs-target="#collapseWidthExample" aria-expanded="false">Get CSV file</li>
     <li className="list-group-item btn" onClick={()=>logout()} data-bs-toggle="collapse" data-bs-target="#collapseWidthExample" aria-expanded="false">Log out</li>
     </ul>    
     return (

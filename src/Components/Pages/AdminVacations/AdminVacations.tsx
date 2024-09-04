@@ -1,6 +1,6 @@
 import { useDispatch, useSelector } from "react-redux";
 import "./AdminVacations.css";
-import { currentVacations, fetchVacations } from "../../../ReduxState/Slices/vacationSlice";
+import { currentVacations, fetchVacations, setNotStarted, setStarted, setVacations } from "../../../ReduxState/Slices/vacationSlice";
 import { Vacation } from "../../../Models/Vacation";
 import { AppDispatch, RootState } from "../../../ReduxState/store";
 import { useEffect, useState } from "react";
@@ -9,9 +9,11 @@ import axios from "axios";
 import VacationCard from "../../VacationCard/VacationCard";
 import AdminVacaCard from "../../AdminVacaCard/AdminVacaCard";
 
+
 function AdminVacations(): JSX.Element {
     const vacations = useSelector((state:RootState)=> state.reducers.vacations);
     const userID = useSelector((state:RootState)=> state.reducers.user.user?.id);
+    const currentToken = useSelector((state: RootState)=> state.reducers.user.token);
     const dispatch = useDispatch<AppDispatch>();
     const ITEMS_PER_PAGE = 10;
     const totalPages = Math.ceil(vacations.value.length / 10);
@@ -56,20 +58,22 @@ function AdminVacations(): JSX.Element {
         setCurrentPage(currentPage + 1);
     }
     const getFollows = async()=>{
-        return (await axios.get("http://localhost:3500/api/follows/" + userID)).data;
+        return (await axios.get("http://localhost:3500/api/follows/" + userID, {headers: {"Authorization": "Bearer " + currentToken}})).data;
     }
     const renderedVacations = 
     vacations.value.length == 0?<p>No vacations to show</p>:vacations.value.slice(startIndex, endIndex).map((item: Vacation)=>(<AdminVacaCard vacation={item} />))
     useEffect(()=>{
         
         
-        dispatch(fetchVacations());
+        axios.get("http://localhost:3500/api/vacations", {headers: {"Authorization": "Bearer " + currentToken}}).then(response=> response.data).then(data=> dispatch(setVacations(data.vacations)));
         const followsResponse = getFollows();
         followsResponse.then(response=> {
             dispatch(setFollows(response));
-            axios.get("http://localhost:3500/api/vacations/vacationReport").then(response=> response.data).then(data=> dispatch(createFollowsObject(data)));
+            axios.get("http://localhost:3500/api/vacations/vacationReport", {headers:{"Authorization": "Bearer " + currentToken}}).then(response=> response.data).then(data=> dispatch(createFollowsObject(data)));
         })
 
+        axios.get("http://localhost:3500/api/vacations/started", {headers: {"Authorization": "Bearer " + currentToken}}).then(response=>response.data).then(data=> dispatch(setStarted(data.result)))
+        axios.get("http://localhost:3500/api/vacations/notStarted", {headers: {"Authorization": "Bearer " + currentToken}}).then(response=>response.data).then(data=> dispatch(setNotStarted(data.result)))
     },[])
     return (
         <div className="Vacations container justify-content-center">
